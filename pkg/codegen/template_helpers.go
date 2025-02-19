@@ -200,7 +200,9 @@ func genResponseUnmarshal(op *OperationDefinition) string {
 			case StringInArray(contentTypeName, contentTypesXML):
 				if typeDefinition.ContentTypeName == contentTypeName {
 					caseAction := fmt.Sprintf("var dest %s\n"+
-						"if err := xml.Unmarshal(bodyBytes, &dest); err != nil { \n"+
+						"decoder := xml.NewDecoder(bytes.NewReader(bodyBytes))\n"+
+						"decoder.CharsetReader = charset.NewReaderLabel\n"+
+						"if err := decoder.Decode(&dest); err != nil { \n"+
 						" return nil, err \n"+
 						"}\n"+
 						"response.%s = &dest",
